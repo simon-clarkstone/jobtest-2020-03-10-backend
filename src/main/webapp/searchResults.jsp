@@ -7,7 +7,10 @@
     <body>
         <ol>
             <c:forEach var='result' items='${results}'>
-                <li><a href="${result.href}"><c:out value="${result.text}" /></a></li>
+                <li>
+                    <a href="${result.href}"><c:out value="${result.text}" /></a>
+                    (<c:out value="${result.engine}" />)
+                </li>
             </c:forEach>
         </ol>
     </body>

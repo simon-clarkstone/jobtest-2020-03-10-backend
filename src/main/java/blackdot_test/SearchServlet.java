@@ -1,15 +1,8 @@
 package blackdot_test;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,28 +10,27 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import com.google.common.collect.ImmutableList;
 
 @WebServlet(name = "SearchServlet", urlPatterns = {"search"}, loadOnStartup = 1) 
 public class SearchServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String query = request.getParameter("q");
-        String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8.toString());
-        URI uri = URI.create("https://www.bing.com/search?q=" + encodedQuery);
-        Document doc = Jsoup.connect(uri.toASCIIString()).get();
-        List<SearchResult> results = new ArrayList<>();
-        doc.getElementsByClass("b_algo").forEach(resultEle -> {
-            resultEle.getElementsByTag("h2").forEach(h2Ele -> {
-                h2Ele.getElementsByTag("a").forEach(linkEle -> {
-                    results.add(new SearchResult(linkEle.attr("href"), linkEle.text()));
-                });
-            });
-        });
-        
-        request.setAttribute("results", results);
+    private List<BasicSearchEngine> _engines;
+
+    @Override
+    public void init() throws ServletException {
+        _engines = ImmutableList.of(
+            new BasicSearchEngine("Bing", "https://www.bing.com/search?q=", "li.b_algo", "h2 a"),
+            new BasicSearchEngine("DuckDuckGo", "https://duckduckgo.com/html/?norw=1&q=", "div.web-result", "h2 a.result__a")
+        );
+    }
+
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
+        final String query = request.getParameter("q");
+        final List<SearchResult> allResults = new ArrayList<>();
+        _engines.forEach(e -> allResults.addAll(e.search(query)));
+        request.setAttribute("results", allResults);
         request.getRequestDispatcher("searchResults.jsp").forward(request, response); 
     }
 }
