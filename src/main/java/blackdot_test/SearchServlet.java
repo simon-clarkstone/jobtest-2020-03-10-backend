@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.github.cliftonlabs.json_simple.JsonArray;
+import com.github.cliftonlabs.json_simple.Jsoner;
 import com.google.common.collect.ImmutableList;
 
 @WebServlet(name = "SearchServlet", urlPatterns = {"search"}, loadOnStartup = 1) 
@@ -30,7 +32,13 @@ public class SearchServlet extends HttpServlet {
         final String query = request.getParameter("q");
         final List<SearchResult> allResults = new ArrayList<>();
         _engines.forEach(e -> allResults.addAll(e.search(query)));
-        request.setAttribute("results", allResults);
-        request.getRequestDispatcher("searchResults.jsp").forward(request, response); 
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        if (request.getHeader("Accept").startsWith("application/json")) {
+            Jsoner.serialize(new JsonArray(allResults), response.getWriter());
+        }
+        else {
+            request.setAttribute("results", allResults);
+            request.getRequestDispatcher("searchResults.jsp").forward(request, response); 
+        }
     }
 }

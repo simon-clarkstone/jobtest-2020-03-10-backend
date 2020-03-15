@@ -1,6 +1,13 @@
 package blackdot_test;
 
-public final class SearchResult {
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsonable;
+
+public final class SearchResult implements Jsonable {
     private final String _engine;
 	private final String _href;
     private final String _text;
@@ -18,5 +25,23 @@ public final class SearchResult {
     }
     public String getText() {
         return _text;
+    }
+    @Override
+    public String toJson() {
+        final StringWriter writable = new StringWriter();
+        try {
+            toJson(writable);
+        }
+        catch (final IOException e) {
+        }
+        return writable.toString();
+    }
+    @Override
+    public void toJson(final Writer writer) throws IOException {
+        final JsonObject json = new JsonObject();
+        json.put("engine", _engine);
+        json.put("href", _href);
+        json.put("text", _text);
+        json.toJson(writer);
     }
 }
