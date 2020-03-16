@@ -7,6 +7,10 @@ import java.io.Writer;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsonable;
 
+/**
+ * A single result from a search engine.
+ * It says which search engine it's from, what the found page URL is, and what text the search engine linked to it with.
+ */
 public final class SearchResult implements Jsonable {
     private final String _engine;
 	private final String _href;

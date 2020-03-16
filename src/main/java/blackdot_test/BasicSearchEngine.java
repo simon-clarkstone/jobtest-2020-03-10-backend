@@ -10,6 +10,11 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+/**
+ * Class that can scrape a search engine that's easy to scrape.
+ * Specifically, a search engine where we just append the query to a URL, fetch the page,
+ * and use CSS selectors to get search results and their links.
+ */
 public final class BasicSearchEngine {
 
     private final String _name;

@@ -14,6 +14,11 @@ import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.Jsoner;
 import com.google.common.collect.ImmutableList;
 
+/**
+ * Query search engines and return combined list of results.
+ * Will return JSON if the Accept header starts "application/json", otherwise HTML.
+ * Deliberately permits requests from any origin so that other webapps can build on top of it.
+ */
 @WebServlet(name = "SearchServlet", urlPatterns = {"search"}, loadOnStartup = 1) 
 public class SearchServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -32,6 +37,7 @@ public class SearchServlet extends HttpServlet {
         final String query = request.getParameter("q");
         final List<SearchResult> allResults = new ArrayList<>();
         _engines.forEach(e -> allResults.addAll(e.search(query)));
+
         response.setHeader("Access-Control-Allow-Origin", "*");
         if (request.getHeader("Accept").startsWith("application/json")) {
             Jsoner.serialize(new JsonArray(allResults), response.getWriter());
