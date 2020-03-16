@@ -5,6 +5,7 @@
         <title>Search results</title>
     </head>
     <body>
+        <a href=".">Back</a>
         <ol>
             <c:forEach var='result' items='${results}'>
                 <li>
