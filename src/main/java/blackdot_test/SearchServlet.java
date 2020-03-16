@@ -23,14 +23,20 @@ import com.google.common.collect.ImmutableList;
 public class SearchServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private List<BasicSearchEngine> _engines;
+    private List<SearchEngine> _engines;
 
     @Override
     public void init() throws ServletException {
-        _engines = ImmutableList.of(
+        setEngines(ImmutableList.of(
+            // Google's pages use randomised CSS class names and other anti-scraping features,
+            // so they're too tricky for a simple project like this.
             new BasicSearchEngine("Bing", "https://www.bing.com/search?q=", "li.b_algo", "h2 a"),
             new BasicSearchEngine("DuckDuckGo", "https://duckduckgo.com/html/?norw=1&q=", "div.web-result", "h2 a.result__a")
-        );
+        ));
+    }
+
+    protected void setEngines(List<SearchEngine> engines) {
+        _engines = engines;
     }
 
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {

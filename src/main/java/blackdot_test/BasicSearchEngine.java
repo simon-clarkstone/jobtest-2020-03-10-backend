@@ -15,20 +15,12 @@ import org.jsoup.nodes.Document;
  * Specifically, a search engine where we just append the query to a URL, fetch the page,
  * and use CSS selectors to get search results and their links.
  */
-public final class BasicSearchEngine {
+public class BasicSearchEngine implements SearchEngine {
 
     private final String _name;
     private final String _urlPrefix;
     private final String _resultSelector;
     private final String _linkSelector;
-
-    public static final class SearchException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-
-        public SearchException(final Exception ex) {
-            super(ex);
-        }
-    }
 
     public BasicSearchEngine(final String name, final String urlPrefix, final String resultSelector, final String linkSelector) {
         _name = name;
@@ -37,12 +29,13 @@ public final class BasicSearchEngine {
         _linkSelector = linkSelector;
     }
 
+    @Override
     public List<SearchResult> search(final String query) throws SearchException {
         final String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
         final URI uri = URI.create(_urlPrefix + encodedQuery);
         Document doc;
         try {
-            doc = Jsoup.connect(uri.toASCIIString()).get();
+            doc = getAndParse(uri.toASCIIString());
         } catch (final IOException ex) {
             throw new SearchException(ex);
         }
@@ -55,5 +48,9 @@ public final class BasicSearchEngine {
 
         return results;
 	}
+
+    protected Document getAndParse(String uri) throws IOException {
+        return Jsoup.connect(uri).get();
+    }
 
 }
