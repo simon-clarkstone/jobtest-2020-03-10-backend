@@ -16,7 +16,7 @@ public class TestBasicSearchEngine {
         SearchEngine engine = new BasicSearchEngine("SE1", "prefix1-", "li.resultItem", "a.originalPage") {
             @Override
             protected Document getAndParse(String uri) throws IOException {
-                assertEquals("prefix1-pineapple", uri);
+                assertEquals("prefix1-pine%25%26%C2%A3%23apple", uri);
                 return Jsoup.parse("<html><body><ul>"
                 + "<li class='resultItem'><a class='originalPage' href='site1'>title1</a></li>"
                 + "<li class='resultItemXXXXX'><a class='originalPage' href='site2'>title2</a></li>"
@@ -29,7 +29,7 @@ public class TestBasicSearchEngine {
             }
         };
 
-        List<SearchResult> results = engine.search("pineapple");
+        List<SearchResult> results = engine.search("pine%&\u00a3#apple");
         assertEquals(3, results.size());
         assertEquals("SE1", results.get(0).getEngine());
         assertEquals("site1", results.get(0).getHref());
