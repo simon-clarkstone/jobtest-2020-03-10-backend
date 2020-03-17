@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
     <head>
-        <title>Search results</title>
+        <title>Search results (back end, not using Angular)</title>
     </head>
     <body>
         <a href=".">Back</a>
